@@ -2,7 +2,7 @@ import { TransformControls } from "@react-three/drei"
 import { MathUtils } from "three"
 import { TransformControls as TransformControlsImpl } from "three-stdlib"
 import { useEffect, useRef } from "react"
-import { game } from "../game"
+import { game } from "../src/engine/game"
 import { bitmask, Layers } from "render-composer"
 
 export function EntityTransformControls({

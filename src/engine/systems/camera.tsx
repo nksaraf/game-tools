@@ -7,7 +7,7 @@ import {
   Vector3
 } from "three"
 import { Helper } from "../lib/Helper"
-import { registerComponent, selectEntity, store } from "../editor/Editor"
+import { registerComponent, selectEntity, store } from "../../../editor/Editor"
 
 import { useEntities } from "miniplex/react"
 import {

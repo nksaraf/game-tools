@@ -52,6 +52,15 @@ export default declare<State>((api) => {
   return {
     name: "transform-react-jsx-source",
     visitor: {
+      JSXClosingElement(path, state) {
+        const { node } = path
+        if (t.isJSXIdentifier(node.name) && node.name.name.match(/^[a-z]/)) {
+          node.name = t.jsxMemberExpression(
+            t.jsxIdentifier("$"),
+            t.jsxIdentifier(node.name.name)
+          )
+        }
+      },
       JSXOpeningElement(path, state) {
         const { node } = path
         if (
@@ -61,6 +70,15 @@ export default declare<State>((api) => {
           path.node.attributes.some(isSourceAttr)
         ) {
           return
+        }
+
+        if (t.isJSXIdentifier(node.name) && node.name.name.match(/^[a-z]/)) {
+          console.log(node.name)
+
+          node.name = t.jsxMemberExpression(
+            t.jsxIdentifier("$"),
+            t.jsxIdentifier(node.name.name)
+          )
         }
 
         if (!state.fileNameIdentifier) {

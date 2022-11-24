@@ -1,12 +1,13 @@
 import { useStore } from "statery"
 import { Leva } from "leva"
-import { store } from "vinxi/editor/Editor"
+import { store } from "./Editor"
 import { useControls, folder } from "leva"
 import { useFrame, useThree } from "@react-three/fiber"
 import { memo, useState } from "react"
 import { selectButton } from "./selectButton"
 import { Stage } from "vinxi/configuration"
 import { componentLibrary } from "./Editor"
+import { MathUtils } from "three"
 
 export function EntityPanel() {
   const { editor } = useStore(store)
@@ -28,7 +29,7 @@ export function EntityPanel() {
 
 let i = 0
 
-export const EntityControls = memo(({ entity }: { entity: Components }) => {
+export const EntityEditor = memo(({ entity }: { entity: Components }) => {
   console.log(entity)
   const scene = useThree((s) => s.scene)
   const [run, setRun] = useState(0)
@@ -90,9 +91,9 @@ export const EntityControls = memo(({ entity }: { entity: Components }) => {
         // @ts-expect-error
         position: entity.transform.position.toArray(),
         rotation: [
-          entity.transform.rotation.x,
-          entity.transform.rotation.y,
-          entity.transform.rotation.z
+          MathUtils.radToDeg(entity.transform.rotation.x),
+          MathUtils.radToDeg(entity.transform.rotation.y),
+          MathUtils.radToDeg(entity.transform.rotation.z)
         ],
         scale: entity.transform.scale.toArray()
       })

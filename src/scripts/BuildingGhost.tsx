@@ -10,7 +10,7 @@ import {
   Vector3
 } from "three"
 import { game } from "vinxi/game"
-import { store } from "vinxi/editor/Editor"
+import { store } from "../../editor/Editor"
 import { useFrame, useThree } from "@react-three/fiber"
 import { useKeyboard } from "vinxi/lib/useKeyboard"
 import { useControls } from "leva"
@@ -102,8 +102,7 @@ export default function BuildingGhost({ entity }: { entity: Components }) {
           objectType: Object.keys(placeObjects)[Number(e.key) - 1]
         })
       }
-      if (e.key === 'KeyR') {
-
+      if (e.key === "KeyR") {
       }
     }
   })

@@ -1,4 +1,4 @@
-import { registerComponent, store } from "../editor/Editor"
+import { registerComponent, store } from "../../../editor/Editor"
 import React from "react"
 import * as THREE from "three"
 import { Mesh } from "three"
@@ -38,6 +38,49 @@ export default function MeshSystem() {
     </>
   )
 }
+
+registerComponent("geometry", {
+  controls(entity) {
+    return {
+      geometry: folder(
+        {
+          type: {
+            options: ["box", "sphere", "cylinder", "cone", "plane"],
+            value: entity.mesh.geometry?.type?.replace("Geometry", ""),
+            onChange(e, path, { initial }) {
+              if (initial) {
+                return
+              }
+              console.log(e)
+              entity.mesh.geometry.type = e + "Geometry"
+              entity.mesh.geometry.props = {
+                // args: [1, 1, 1],
+              }
+
+              let className = e[0].toUpperCase() + e.slice(1) + "Geometry"
+              let mesh = entity.mesh$
+
+              if (mesh.geometry) {
+                mesh.geometry.dispose()
+              }
+
+              if (mesh) {
+                mesh.geometry = new THREE[className]()
+              }
+            }
+          },
+          widthSegments: {
+            value: 1,
+            render: null
+          }
+        },
+        {
+          collapsed: true
+        }
+      )
+    }
+  }
+})
 
 registerComponent("mesh", {
   addTo(e) {
@@ -92,6 +135,20 @@ registerComponent("mesh", {
           map: {
             image: "/textures/grass.jpeg",
             type: LevaInputs.IMAGE
+          },
+          color: {
+            value: entity.mesh.material.props?.color ?? "#ffffff",
+            onChange(e) {
+              entity.mesh.material.props.color = e
+              console.log(e)
+              if (entity.mesh$) {
+                console.log(entity.mesh$)
+                if (Array.isArray(entity.mesh$.material)) {
+                } else {
+                  entity.mesh$.material.color.setStyle(e)
+                }
+              }
+            }
           }
         },
         {

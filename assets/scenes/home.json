@@ -170,5 +170,57 @@
         2
       ]
     }
+  },
+  {
+    "name": "cube1",
+    "jsx": {
+      "fileName": "/Users/nikhilsaraf/garage/games/vinxi/main.tsx",
+      "lineNumber": 49,
+      "columnNumber": 9
+    },
+    "transform": {
+      "position": [
+        5.278560981365844,
+        2.0000000000000013,
+        0
+      ],
+      "rotation": [
+        -0.43633231299858233,
+        0.7853981633974483,
+        0,
+        "XYZ"
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    }
+  },
+  {
+    "name": "cube2",
+    "jsx": {
+      "fileName": "/Users/nikhilsaraf/garage/games/vinxi/main.tsx",
+      "lineNumber": 58,
+      "columnNumber": 9
+    },
+    "transform": {
+      "position": [
+        1.1172988147184817,
+        0,
+        0
+      ],
+      "rotation": [
+        -0.7853981633974483,
+        0,
+        0,
+        "XYZ"
+      ],
+      "scale": [
+        6,
+        1,
+        1
+      ]
+    }
   }
 ]

@@ -7,9 +7,19 @@ import _debug from "debug"
 import tsconfiPaths from "vite-tsconfig-paths"
 import type { Plugin, ResolvedConfig, ViteDevServer } from "vite"
 import { createMiddleware } from "@hattip/adapter-node"
+import { types as t, template } from "@babel/core"
+
 import { GLTFLoader, DRACOLoader } from "three-stdlib"
 import esbuild from "esbuild"
-import { parseSync, transformFileSync, transformSync } from "@babel/core"
+import {
+  parseSync,
+  transformFileSync,
+  transformFromAst,
+  transformSync,
+  traverse
+} from "@babel/core"
+import * as gen from "@babel/generator"
+import prettier from "prettier"
 
 import { createRouter } from "@hattip/router"
 
@@ -69,18 +79,30 @@ import babel from "./babel"
 
 const router = createRouter()
 
+let justEdited = {}
+
 // https://vitejs.dev/config/
 export default defineConfig({
   publicDir: "assets",
   plugins: [
     tsconfiPaths(),
     glsl(),
+    {
+      name: "hmr",
+      handleHotUpdate(ctx) {
+        console.log(ctx.file)
+        if (justEdited[ctx.file]) {
+          return []
+        }
+      }
+    },
     react({
       jsxRuntime: "classic",
       babel: {
         plugins: [babel]
       }
     }),
+
     {
       name: "cross-server",
       configureServer(server) {
@@ -100,6 +122,7 @@ export default defineConfig({
           return id
         }
       },
+
       async load(id) {
         if (id.endsWith("?gltfjsx")) {
           console.log("loading", id)
@@ -149,6 +172,7 @@ export default defineConfig({
         }
       }
     },
+
     hattip({
       handler: (config, server) => async (event) => {
         let url = new URL(event.request.url)
@@ -184,14 +208,71 @@ export default defineConfig({
           event.request.method === "POST" &&
           url.pathname === "/__editor/write"
         ) {
-          const data = await event.request.json()
-          console.log("writing", data)
-          console.log(
-            parseSync(fs.readFileSync(data.source.fileName).toString(), {
-              presets: ["@babel/preset-typescript", "@babel/preset-react"],
-              filename: data.source.fileName
+          const diffs = await event.request.json()
+          for (var data of diffs) {
+            console.log("writing", data)
+            let ast = parseSync(
+              fs.readFileSync(data.source.fileName).toString(),
+              {
+                presets: ["@babel/preset-typescript", "@babel/preset-react"],
+                filename: data.source.fileName
+              }
+            )
+
+            traverse(ast, {
+              JSXOpeningElement: (path) => {
+                if (
+                  path.node.loc.start.line === data.source.lineNumber &&
+                  path.node.loc.start.column === data.source.columnNumber - 1
+                ) {
+                  addAttribute("position")
+                  addAttribute("rotation")
+                  addAttribute("scale")
+                }
+
+                function addAttribute(prop) {
+                  let attr = path.node.attributes.find(
+                    (attr) => t.isJSXAttribute(attr) && attr.name.name === prop
+                  )
+
+                  if (attr) {
+                    attr.value = t.jsxExpressionContainer(
+                      t.arrayExpression([
+                        t.numericLiteral(data.value[prop][0]),
+                        t.numericLiteral(data.value[prop][1]),
+                        t.numericLiteral(data.value[prop][2])
+                      ])
+                    )
+                  } else {
+                    path.node.attributes.push(
+                      t.jsxAttribute(
+                        t.jsxIdentifier(prop),
+                        t.jsxExpressionContainer(
+                          t.arrayExpression([
+                            t.numericLiteral(data.value[prop][0]),
+                            t.numericLiteral(data.value[prop][1]),
+                            t.numericLiteral(data.value[prop][2])
+                          ])
+                        )
+                      )
+                    )
+                  }
+                }
+              }
             })
-          )
+            let code = gen.default.default(ast, {}).code
+            code = prettier.format(code, {
+              semi: false,
+              parser: "babel-ts"
+            })
+
+            justEdited[`${data.source.fileName}`] = true
+            setTimeout(() => {
+              delete justEdited[`${data.source.fileName}`]
+            }, 1000)
+            fs.writeFileSync(data.source.fileName, code)
+          }
+          return new Response("ok")
         }
         if (
           event.request.method === "GET" &&

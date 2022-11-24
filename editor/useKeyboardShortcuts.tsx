@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
-import { serialize } from "../world"
+import { serialize } from "../src/engine/world"
 import { store } from "./Editor"
 import { useStore } from "statery"
-import { game } from "../game"
+import { game } from "../src/engine/game"
 
 export function useKeyboardShortcuts() {
   const { editor } = useStore(store)

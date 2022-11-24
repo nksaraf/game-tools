@@ -1,7 +1,7 @@
 import { Debug } from "@react-three/rapier"
 import { Perf } from "r3f-perf"
 import { folder, useControls } from "leva"
-import { store } from "./editor/Editor"
+import { store } from "../../editor/Editor"
 
 export function Devtools() {
   const { physics, performance } = useControls(

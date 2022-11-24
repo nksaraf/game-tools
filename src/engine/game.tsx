@@ -14,13 +14,13 @@ export const gameplayStore = makeStore({
 
 import { parse } from "./world"
 
-const rawData = await fetch("/scenes/home.json").then((res) => res.text())
+// const rawData = await fetch("/scenes/home.json").then((res) => res.text())
 
 let world: ReturnType<typeof parse>
 if (globalThis.world) {
   world = globalThis.world
 } else {
-  world = parse(rawData)
+  world = parse(`[]`)
 }
 console.log(world)
 

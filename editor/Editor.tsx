@@ -20,12 +20,12 @@ import { Euler, Object3D, Vector3 } from "three"
 import { TransformControls as TransformControlsImpl } from "three-stdlib"
 import { useKeyboardShortcuts } from "./useKeyboardShortcuts"
 import { useEffect } from "react"
-import { usePersistedControls } from "../lib/usePersistedControls"
+import { usePersistedControls } from "../src/engine/lib/usePersistedControls"
 import { game } from "vinxi/game"
 import { With } from "miniplex"
 import { bitmask, Layers } from "render-composer"
 import { SidebarTunnel } from "./tunnel"
-import { EntityPanel, EntityControls } from "./EntityInspectorPanel"
+import { EntityPanel, EntityEditor } from "./EntityInspectorPanel"
 import { Components, styled } from "leva/plugin"
 import { entitiesPanel } from "./entitiesPanel"
 import { EntityTransformControls } from "./EntityTransformControls"
@@ -164,7 +164,7 @@ export default function Editor() {
       </SidebarTunnel.In>
       {grid && <gridHelper layers-mask={bitmask(1)} />}
       {axis && <axesHelper layers-mask={bitmask(1)} />}
-      <GizmoHelper alignment={"bottom-right"}>
+      <GizmoHelper alignment={"bottom-right"} renderOrder={10}>
         <GizmoViewport />
       </GizmoHelper>
     </>
@@ -256,7 +256,7 @@ export function EditorControls() {
   return (
     <>
       {entities.map((entity) => (
-        <EntityControls key={game.world.id(entity)} entity={entity} />
+        <EntityEditor key={game.world.id(entity)} entity={entity} />
       ))}
       {entities.map((entity) => (
         <EntityTransformControls key={game.world.id(entity)} entity={entity} />

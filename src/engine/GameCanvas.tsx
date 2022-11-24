@@ -6,9 +6,9 @@ import { Stage } from "./configuration"
 import { controller } from "../input"
 import { Physics } from "@react-three/rapier"
 import { ErrorBoundary } from "react-error-boundary"
-import { SidebarTunnel } from "./editor/tunnel"
+import { SidebarTunnel } from "../../editor/tunnel"
 import { Devtools } from "./Devtools"
-import { store } from "./editor/Editor"
+import { store } from "../../editor/Editor"
 
 export const World = ({ children }: React.PropsWithChildren<{}>) => {
   return (
