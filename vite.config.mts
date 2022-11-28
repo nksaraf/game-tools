@@ -97,7 +97,6 @@ export default defineConfig({
       }
     },
     react({
-      jsxRuntime: "classic",
       babel: {
         plugins: [babel]
       }
